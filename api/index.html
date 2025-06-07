@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Student Performance Prediction</title>
+  <style>
+    body { font-family: Arial, sans-serif; max-width: 500px; margin: 20px auto; }
+    label { display: block; margin-top: 10px; }
+    input, select { width: 100%; padding: 8px; margin-top: 5px; }
+    button { margin-top: 20px; padding: 10px 20px; }
+    #result { margin-top: 20px; font-weight: bold; }
+  </style>
+</head>
+<body>
+  <h1>Student Performance Prediction</h1>
+  <form id="predictForm">
+    <label>Age:
+      <input type="number" name="Age" min="5" max="100" required />
+    </label>
+
+    <label>Gender:
+      <select name="Gender" required>
+        <option value="">Select</option>
+        <option value="Male">Male</option>
+        <option value="Female">Female</option>
+      </select>
+    </label>
+
+    <label>Socioeconomic Status:
+      <select name="SocioeconomicStatus" required>
+        <option value="">Select</option>
+        <option value="Low">Low</option>
+        <option value="Medium">Medium</option>
+        <option value="High">High</option>
+      </select>
+    </label>
+
+    <label>Grades (0-100):
+      <input type="number" name="Grades" min="0" max="100" required />
+    </label>
+
+    <label>Attendance (percentage 0-100):
+      <input type="number" name="Attendance" min="0" max="100" required />
+    </label>
+
+    <label>Time Spent On Homework (hours):
+      <input type="number" name="TimeSpentOnHomework" min="0" max="24" required />
+    </label>
+
+    <label>Class Participation:
+      <select name="ClassParticipation" required>
+        <option value="">Select</option>
+        <option value="Low">Low</option>
+        <option value="Medium">Medium</option>
+        <option value="High">High</option>
+      </select>
+    </label>
+
+    <button type="submit">Predict</button>
+  </form>
+
+  <div id="result"></div>
+
+  <script>
+    const form = document.getElementById('predictForm');
+    const resultDiv = document.getElementById('result');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const formData = new FormData(form);
+      const data = {};
+      formData.forEach((value, key) => { data[key] = value; });
+
+      try {
+        const response = await fetch('/predict', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+
+        const result = await response.json();
+        if (response.ok) {
+          resultDiv.textContent = `Prediction: ${result.prediction}`;
+          resultDiv.style.color = 'green';
+        } else {
+          resultDiv.textContent = `Error: ${result.error}`;
+          resultDiv.style.color = 'red';
+        }
+      } catch (error) {
+        resultDiv.textContent = 'Error communicating with server.';
+        resultDiv.style.color = 'red';
+      }
+    });
+  </script>
+</body>
+</html>
